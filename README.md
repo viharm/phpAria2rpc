@@ -1,43 +1,189 @@
-php-aria2
-=========
-# talk with aria2 using json-RPC
+# phpAria2rpc
 
-## make sure aria2c is running
-you can add below into /etc/rc.local
-`/usr/local/bin/aria2c --enable-rpc --rpc-allow-origin-all -c -D`
+[![Version][mg_BadgeVersion]][ln_ReleaseLatest]
+[![Issues][mg_BadgeIssues]][ln_Issues]
+[![Language][mg_BadgeCodeLang]][ln_CodeLang]
+[![License][mg_BadgeLicense]][ln_License]
+
+Library to communicate with aria2 using json-RPC.
+
+Based on *[shiny](https://github.com/shiny)*'s *[php-aria2](https://github.com/shiny/php-aria2)*.
 
 
-> the document of aria2 is [here](http://aria2.sourceforge.net/manual/en/html/aria2c.html#rpc-interface)
+## Install
 
-## How To
-the php-aria2 is simple and just 31 lines.
-### Examples
-	include 'aria2.class.php';
-	$aria2 = new aria2('http://127.0.0.1:6800/jsonrpc'); //this value is the default value,you can leave it empty.
-	var_dump($aria2->getGlobalStat());
-	var_dump($aria2->tellActive());
-	var_dump($aria2->tellWaiting(0,1000));
-	var_dump($aria2->tellStopped(0,1000));
-	var_dump($aria2->addUri(array('https://www.google.com.hk/images/srpr/logo3w.png'),array(
+
+### Pre-requisites
+
+* PHP 5+ with cURL support
+* Standard web framework (web server, etc.)
+* Aria2 running in daemon mode either on the same host or on a different known host
+
+
+### Download
+
+
+#### Archive
+
+Get the release archives from [downloads][ln_ReleaseLatest]
+
+
+#### Clone
+
+Clone repository.
+
+```
+git clone --recurse-submodules \
+https://github.com/viharm/phpAria2rpc.git
+```
+
+Remember to clone recursively (`--recurse-submodules`) to ensure cloning the submodules.
+
+
+### Deploy
+
+Save the downloaded directory structure in your choice of path within your application (plugins, includes, etc.)
+
+
+## Configure
+
+No specific configuration required yet.
+
+
+## Usage
+
+
+### Run Aria2 in daemon mode
+
+There are several recommended options for configuring *Aria2* however the minimum necessary to get started are...
+
+* `--enable-rpc`
+* `--rpc-allow-origin-all`
+* `-c`
+* `-D`
+
+Assuming that the *Aria2* binary is in your execution path, run it with the above options...
+
+```
+aria2c --enable-rpc --rpc-allow-origin-all -c -D
+```
+
+To enable auto-start on most *Linux* systems, add the following in `/etc/rc.local` before the `exit` line...
+
+```
+/usr/local/bin/aria2c --enable-rpc --rpc-allow-origin-all -c -D
+```
+
+
+### Use
+
+
+#### Include the library in your application code
+
+```
+include 'phpAria2.class.inc.php';
+```
+
+#### Create an instance
+
+```
+$aria2 = new aria2() ;
+```
+
+*phpAria2rpc* uses safe defaults for *Aria2* running on the same host as the script is running on. See advanced usage for custom configuration
+
+
+#### Call Aria2 methods
+
+```
+var_dump($aria2->getGlobalStat());
+var_dump($aria2->tellActive());
+var_dump($aria2->tellWaiting(0,1000));
+var_dump($aria2->tellStopped(0,1000));
+var_dump($aria2->addUri(array('https://www.google.com.hk/images/srpr/logo3w.png'),array(
 	    'dir'=>'/tmp',
-	)));
-	var_dump($aria2->tellStatus('1'));
-	var_dump($aria2->removeDownloadResult('1'));
-	//and more ...
+)));
+var_dump($aria2->tellStatus('1'));
+var_dump($aria2->removeDownloadResult('1'));
+//and more ...
+```
 
-you can read  [http://aria2.sourceforge.net/manual/en/html/aria2c.html#rpc-interface](the the document of aria2)
+### Advanced usage
 
-### Download a File
+Advanced configuration allows custom settings. Formulate a server configuration array
 
-	var_dump($aria2->addUri(array('https://www.google.com.hk/images/srpr/logo3w.png'),array(
-		'dir'=>'/tmp',
-		)));
+```
+$server = array (
+  'host'      => 'aria2.host.local' ,
+  'port'      => '6800' ,
+  'rpcsecret' => 'aria2rpcsecrettoken' ,
+  'secure'    => TRUE ,
+  'cacert'    => '/path/to/ca-cert/on/host/running/phpAria2.pem' ,
+  'rpcuser'   => 'legacyrpcusername' ,
+  'rpcpass'   => 'legacyrpcpassword'
+) ;
+```
 
-[http://aria2.sourceforge.net/manual/en/html/aria2c.html#input-file](More Options is Here)
+This array is passed as a parameter only once, whilst creating an instance of the class.
 
-### Returned Data Examples
-*Can't Download*
+```
+$aria2 = new aria2($$server) ;
+```
 
+*phpAria2rpc* inserts the correct value as per *Aria2*'s requirement.
+
+Further usage is normal, by calling *Aria2* methods against  *phpAria2rpc*.
+
+
+#### Secure RPC
+
+If *Aria2* is configured for secure RPC, then set the `secure` key value in the `$server` array to `TRUE`.
+
+If self-signed certificates are used, then the appropriate CA certificate will have to be copied over to the host running this library and its path specified in the `cacert` key value in the `$server` array.
+
+
+#### RPC secret token
+
+If *Aria2* has been configured with a secret token on the RPC interface then this should be specified in the `rpcsecret` key value in the `$server` array.
+
+
+#### Legacy RPC authentication
+
+*phpAria2rpc* can also be configured to connect to *Aria2* daemons with the legacy username/password authentication for the RPC interface.
+
+Please note that the use of this method of authentication is deprecated by the *Aria2* authors, however still supported by *phpAria2rpc* for compatibility with older versions of *Aria2* without the newer secret token authentication.
+
+
+#### RPC username (legacy)
+
+Specify the RPC username in the `rpcuser` key value of the `$server` array.
+
+
+#### RPC password (legacy)
+
+Specify the RPC password in the `rpcpass` key value of the `$server` array.
+
+
+### Examples
+
+
+#### Download a File
+
+```
+	$addresult = $aria2->addUri ( array (
+	  'https://www.google.com.hk/images/srpr/logo3w.png'
+	) ,
+  array('dir'=>'/tmp')
+  ) ) ;
+```
+
+
+#### Returned Data
+
+
+##### Can't Download
+
+```
 	array(3) {
 	  ["id"]=>
 	  string(1) "1"
@@ -97,9 +243,12 @@ you can read  [http://aria2.sourceforge.net/manual/en/html/aria2c.html#rpc-inter
 	    string(1) "0"
 	  }
 	}
+```
 
-*Downloading (Active)*
 
+##### Downloading (Active)
+
+```
 	array(3) {
 	  ["id"]=>
 	  string(1) "1"
@@ -187,9 +336,12 @@ you can read  [http://aria2.sourceforge.net/manual/en/html/aria2c.html#rpc-inter
 	    string(1) "0"
 	  }
 	}
+```
 
-*Downloaded*
-	
+
+##### Downloaded
+
+```
 	array(3) {
 	  ["id"]=>
 	  string(1) "1"
@@ -286,3 +438,113 @@ you can read  [http://aria2.sourceforge.net/manual/en/html/aria2c.html#rpc-inter
 	    string(1) "0"
 	  }
 	}
+```
+
+## Known limitations
+
+* *Aria2* does not set CA certificates, so for self-signed certificates, the CA cert file will have to be copied to the host running *phpAria2rpc*.
+
+
+## Support
+
+Please refer to the documentation of *Aria2*
+
+* http://aria2.sourceforge.net/manual/en/html/aria2c.html#rpc-interface for RPC interface.
+* http://aria2.sourceforge.net/manual/en/html/aria2c.html for general options.
+
+Debugging can be enabled by setting boolean `$GLOBALS['bl_DebugSwitch']` to `TRUE`.
+
+```
+$GLOBALS['bl_DebugSwitch'] = TRUE ;
+```
+
+For issues, queries, suggestions and comments please create an [issue/ticket][ln_Issues].
+
+
+## Contribute
+
+Please feel free to clone/fork and contribute via pull requests. Donations also welcome, simply create an [issue/ticket][ln_Issues].
+
+Please make contact for more information.
+
+
+## Development environment ##
+Developed on..
+
+* *Debian Wheezy*
+* *Apache* 2.2
+* *PHP* 5.4
+* *Aria2* 1.15.1 and 1.18.8
+
+
+## Licence
+
+Licensed under the modified BSD (3-clause) license.
+
+A copy of the license is available...
+
+* in the enclosed [`LICENSE`][ln_License] file.
+* at http://opensource.org/licenses/BSD-3-Clause
+
+
+## References
+
+
+### php-aria2
+
+* `aria2.class.php` (2013-11-22)
+* Available in the public domain at https://github.com/shiny/php-aria2
+* Author daijie (shiny)
+
+
+## Credits
+
+
+### Tools
+
+
+#### Kint
+
+*Kint* debugging library (http://raveren.github.io/kint/), used under the MIT license
+
+Copyright (c) 2013 Rokas Å leinius (raveren at gmail dot com)
+
+
+### Utilities
+
+
+#### Codiad
+
+*Codiad* web based IDE (https://github.com/Codiad/Codiad), used under a MIT-style license.
+
+Copyright (c) Codiad & Kent Safranski (codiad.com)
+
+
+#### SmartGit
+
+*SmartGit* client for *Git* (http://www.syntevo.com/smartgit/) used under SOFTWARE Non-Commercial License 
+
+Copyright by syntevo GmbH
+
+
+#### jEdit
+
+*jEdit* text editor (http://www.jedit.org/), used under the GNU GPL v2.
+
+Copyright (C) jEdit authors.
+
+
+### GitHub
+
+Hosted by *GitHub* code repository (github.com).
+
+
+
+[mg_BadgeLicense]: https://img.shields.io/github/license/viharm/phpAria2rpc.svg?style=flat-square
+[mg_BadgeVersion]: https://img.shields.io/github/release/viharm/phpAria2rpc.svg?style=flat-square
+[mg_BadgeIssues]: https://img.shields.io/github/issues/viharm/phpAria2rpc.svg?style=flat-square
+[mg_BadgeCodeLang]: https://img.shields.io/badge/language-php-yellowgreen.svg?style=flat-square
+[ln_ReleaseLatest]: https://github.com/viharm/phpAria2rpc/releases/latest
+[ln_License]: LICENSE?at=master
+[ln_Issues]: https://github.com/viharm/phpAria2rpc/issues
+[ln_CodeLang]: https://www.python.org/
