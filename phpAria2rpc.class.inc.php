@@ -20,11 +20,13 @@
   /* Include the debugging library */
   /* This can be commented out, as only one function in this library is utilised */
   /* There is a trap for this function not being defined, in case the library is not included */
-  require_once ( realpath (
+  
+  @include_once ( realpath (
     dirname(__FILE__) .
     DIRECTORY_SEPARATOR .
     'fl_Debug.lib.inc.php'
   ) ) ;
+  
   
   class phpAria2rpc {
     
@@ -42,7 +44,7 @@
         'rpcpass'   => NULL
       )
     ) {
-      if (!function_exists('fn_Debug')) { function fn_Debug(){} }
+      if (!function_exists('fn_Debug')) { function fn_Debug(){} }  // trap calls to debug if debug library is not loaded.
       
       fn_Debug ( 'Server information' , $server , 'rpcpass' ) ;
       $this->server = $server ;
