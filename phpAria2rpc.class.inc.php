@@ -26,7 +26,7 @@
     'fl_Debug.lib.inc.php'
   ) ) ;
   
-  class aria2 {
+  class phpAria2rpc {
     
     private $server ;
     private $ch ;

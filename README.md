@@ -81,13 +81,13 @@ To enable auto-start on most *Linux* systems, add the following in `/etc/rc.loca
 #### Include the library in your application code
 
 ```
-include 'phpAria2.class.inc.php';
+include 'phpAria2rpc.class.inc.php';
 ```
 
 #### Create an instance
 
 ```
-$aria2 = new aria2() ;
+$aria2 = new phpAria2rpc() ;
 ```
 
 *phpAria2rpc* uses safe defaults for *Aria2* running on the same host as the script is running on. See advanced usage for custom configuration
@@ -127,7 +127,7 @@ $server = array (
 This array is passed as a parameter only once, whilst creating an instance of the class.
 
 ```
-$aria2 = new aria2($$server) ;
+$aria2 = new phpAria2rpc($server) ;
 ```
 
 *phpAria2rpc* inserts the correct value as per *Aria2*'s requirement.
@@ -520,13 +520,6 @@ Copyright (c) 2013 Rokas Å leinius (raveren at gmail dot com)
 Copyright (c) Codiad & Kent Safranski (codiad.com)
 
 
-#### SmartGit
-
-*SmartGit* client for *Git* (http://www.syntevo.com/smartgit/) used under SOFTWARE Non-Commercial License 
-
-Copyright by syntevo GmbH
-
-
 #### jEdit
 
 *jEdit* text editor (http://www.jedit.org/), used under the GNU GPL v2.
@@ -545,6 +538,6 @@ Hosted by *GitHub* code repository (github.com).
 [mg_BadgeIssues]: https://img.shields.io/github/issues/viharm/phpAria2rpc.svg?style=flat-square
 [mg_BadgeCodeLang]: https://img.shields.io/badge/language-php-yellowgreen.svg?style=flat-square
 [ln_ReleaseLatest]: https://github.com/viharm/phpAria2rpc/releases/latest
-[ln_License]: LICENSE?at=master
+[ln_License]: LICENCE?at=master
 [ln_Issues]: https://github.com/viharm/phpAria2rpc/issues
 [ln_CodeLang]: https://www.python.org/
