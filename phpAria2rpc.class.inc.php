@@ -76,29 +76,17 @@
         case TRUE :
           fn_Debug ( 'Secure RPC connection is requested; setting prefix for connection string' ) ;
           $connprefix = 'https://' ;
+          $curlproto = CURLPROTO_HTTPS ;
           break ;
         default :
           fn_Debug ( 'Secure RPC connection is not requested; setting prefix for connection string' ) ;
           $connprefix = 'http://' ;
+          $curlproto = CURLPROTO_HTTP ;
       }
-      fn_Debug ( 'protocol selected for Connection prefix, now checking if newer RPC secret is provided' , $connprefix ) ;
-      fn_Debug ( 'Checking legacy RPC credentials' , array ( $this->server['rpcuser'] , $this->server['rpcpass'] ) , 1 ) ;
-      if ( ! $this->server['rpcuser'] == NULL ) {
-        fn_Debug ( 'found username for legacy Aria2 RPC credentials, appending to connection prefix' , $this->server['rpcuser'] ) ;
-        $connprefix .= $this->server['rpcuser'] ;
-        fn_Debug ( 'Username appended to connection prefix, checking legacy password' , $connprefix ) ;
-        if ( ! $this->server['rpcpass'] == NULL ) {
-          fn_Debug ( 'found password for legacy Aria2 RPC credentials, appending to connection prefix' , $this->server['rpcpass'] , '' ) ;
-          $connprefix .= ':' . $this->server['rpcpass'] . '@' ;
-          fn_Debug ( 'password appended to connection prefix' , $connprefix , '' ) ;
-        } else {
-          fn_Debug ( 'Legacy RPC password not provided' ) ;
-        }
-      } else {
-        fn_Debug ( 'Legacy RPC user not provided. legacy RPC credentials skipped' ) ;
-      }
+      fn_Debug ( 'protocol selected for Connection prefix' , $connprefix ) ;
+      fn_Debug ( 'protocol selected for cURL' , $curlproto ) ;
       fn_Debug ( 'connection prefix complete. Formulating connection string' ) ;
-      $connstring = $connprefix . $this->server['host'] . ':' . $this->server['port'] . '/jsonrpc' ;
+      $connstring = $connprefix . $this->server['host'] . '/jsonrpc' ;
       fn_Debug ( 'Connection string formulated, releasing prefix memory' , $connstring ) ;
       unset($connprefix) ;
       $this->ch = curl_init($connstring) ;
@@ -107,33 +95,47 @@
       fn_Debug ('error message' , curl_error($this->ch) ) ;
       fn_Debug ( 'Checking if debugging is enabled' , $GLOBALS['bl_DebugSwitch'] ) ;
       if ($GLOBALS['bl_DebugSwitch']===TRUE) {
+        $logfile = fopen ( 'phpAria2rpc.curl.log' , 'a+' ) ;
+        fn_Debug ( 'Attempted to open log file' , $logfile ) ;
         $result = NULL ;
         fn_Debug ( 'initialised result buffer' , $result ) ;
         curl_setopt_array (
           $this->ch ,
           array (
-            CURLOPT_VERBOSE        => TRUE ,
-            CURLOPT_CERTINFO       => TRUE
+            CURLOPT_STDERR   => $logfile ,
+            CURLOPT_VERBOSE  => TRUE ,
+            CURLOPT_CERTINFO => TRUE
           )
         ) ;
         fn_Debug ( 'Verbosity for curl options set; analysing errors ' , $result ) ;
         fn_Debug ( 'error code' , curl_errno($this->ch) ) ;
         fn_Debug ( 'error message' , curl_error($this->ch) ) ;
       }
+      $curlinfo = curl_version() ;
+      fn_Debug ( 'Extracted cURL version info' , $curlinfo ) ;
       fn_Debug ( 'Setting primary curl options' ) ;
       $result = NULL ;
       fn_Debug ( 'initialised result buffer' , $result ) ;
       $result = curl_setopt_array (
         $this->ch ,
         array (
-          CURLOPT_POST           => TRUE ,
-          CURLOPT_RETURNTRANSFER => TRUE ,
-          CURLOPT_HEADER         => FALSE
+          CURLOPT_POST              => TRUE ,
+          CURLOPT_RETURNTRANSFER    => TRUE ,
+          CURLOPT_HEADER            => FALSE ,
+          CURLOPT_PROTOCOLS         => $curlproto ,
+          CURLOPT_UNRESTRICTED_AUTH => FALSE ,
+          CURLOPT_FOLLOWLOCATION    => FALSE ,
+          CURLOPT_PORT              => $this->server['port'] ,
+          CURLOPT_HTTPAUTH          => CURLAUTH_BASIC ,
+          CURLOPT_USERPWD           => $this->server['rpcuser'] . ':' . $this->server['rpcpass'] ,
+          CURLOPT_USERAGENT         => 'Mozilla/5.0 (' . $curlinfo['host'] . ') libcURL/' . $curlinfo['version'] . ' phpAria2rpc'
         )
       ) ;
       fn_Debug ( 'Curl options set; analysing errors ' , $result ) ;
       fn_Debug ('error code' , curl_errno($this->ch) ) ;
       fn_Debug ('error message' , curl_error($this->ch) ) ;
+      fn_Debug ('Freeing memory used to store cURL info' ,$curlinfo) ;
+      unset($curlinfo) ;
       fn_Debug ( 'Checking if CA certificate has been provided' , $this->server['cacert'] ) ;
       if (!is_null($this->server['cacert'])) {
         $result = NULL ;
@@ -153,6 +155,17 @@
     function __destruct() {
       fn_Debug ( 'closing connection' , $this->ch ) ;
       curl_close($this->ch) ;
+      @fn_Debug ( 'Checking if a curl log file is still open' , $logfile ) ;
+      if(@$logfile) {
+        fn_Debug ('curl log file is still open, now closing') ;
+        if(fclose($logfile)) {
+          fn_Debug ('curl log file closed successfully') ;
+        } else {
+          fn_Debug ('failed to close curl log file') ;
+        }
+      } else {
+        fn_Debug ( 'Log file pointer not found, ignoring' ) ;
+      }
     }
     
     private function req($data) {
