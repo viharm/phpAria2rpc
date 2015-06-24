@@ -120,7 +120,14 @@ $server = array (
   'secure'    => TRUE ,
   'cacert'    => '/path/to/ca-cert/on/host/running/phpAria2.pem' ,
   'rpcuser'   => 'legacyrpcusername' ,
-  'rpcpass'   => 'legacyrpcpassword'
+  'rpcpass'   => 'legacyrpcpassword' ,
+  'proxy'     => array (
+    'type' => 'socks5' ,
+    'host' => 'localhost' ,
+    'port' => 9050 ,
+    'user' => 'proxyuser' ,
+    'pass' => 'proxypassword
+  )
 ) ;
 ```
 
@@ -162,6 +169,55 @@ Specify the RPC username in the `rpcuser` key value of the `$server` array.
 #### RPC password (legacy)
 
 Specify the RPC password in the `rpcpass` key value of the `$server` array.
+
+
+#### Connecting through proxy
+
+*phpAria2rpc* allows connecting to the desired instance of *Aria2* via proxy. This can be accomplished by adding an sub-array item `proxy` to the array parameter passed to the class.
+
+This sub-array associative and is used for setting the proxy configuration.
+
+Please refer to the proxy configuration or documentation of your proxy service for information on values specific to the application environment.
+
+It has the following elements.
+
+
+##### Type
+
+Use the value for the key `type` to specify the type of proxy to use. Currently only `http` and `socks5` types are supported.
+
+There is no default value for this parameter.
+
+
+##### Host
+
+Use the value for the key `host` to specify the proxy host to use. Both IP addresses and resolvable host names are allowed.
+
+There is no default value for this parameter.
+
+
+##### Port
+
+Use the value for the key `port` to specify the port of the proxy service. This is the port that the proxy service is listening for connections on.
+
+There is no default value for this parameter.
+
+
+###### Proxy authentication
+
+If the proxy server requires authentication, then this can be achieved by two more items in the `proxy` sub-array.
+
+Remember that this is different from the RPC authentication for *Aria2*. 
+
+* Use the value for the key `user` to specify the username to authenticate with the proxy service.
+
+  If `user` is not provided or is `NULL` then *phpAria2* does not attempt to authenticate with the proxy service.
+  
+* Use the value for the key `pass` to specify the password to authenticate with the proxy service.
+
+  If `pass` is not provided or is `NULL`, *phpAria2* will use only the username to authenticate with the proxy service. While this scenario is unlikely, it allows connecting to proxy servers with non-standard setups.
+  
+  Proxy authentication with only username and without password depends on the proxy service and may fail if not configured properly.
 
 
 ### Examples
