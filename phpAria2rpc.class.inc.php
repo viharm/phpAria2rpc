@@ -41,7 +41,14 @@
         'secure'    => FALSE ,
         'cacert'    => NULL ,
         'rpcuser'   => NULL ,
-        'rpcpass'   => NULL
+        'rpcpass'   => NULL ,
+        'proxy'     => array (
+          'type' => NULL ,
+          'host' => NULL ,
+          'port' => NULL ,
+          'user' => NULL ,
+          'pass' => NULL
+        )
       )
     ) {
       if (!function_exists('fn_Debug')) { function fn_Debug(){} }  // trap calls to debug if debug library is not loaded.
@@ -70,6 +77,36 @@
       if ( ! @array_key_exists ( 'rpcpass' , $this->server ) | @is_null($this->server['rpcpass']) ) {
         $this->server['rpcpass'] = NULL ;
       }
+      if ( ! @array_key_exists ( 'proxy' , $this->server ) | @is_null($this->server['proxy']) ) {
+        $this->server['proxy'] = NULL ;
+      } else {
+        if ( ! @array_key_exists ( 'type' , $this->server['proxy'] ) | @is_null($this->server['proxy']['type']) ) {
+          $this->server['proxy']['type'] = NULL ;
+        } else {
+          switch($this->server['proxy']['type']) {
+            case 'http' :
+              $this->server['proxy']['type'] = CURLPROXY_HTTP ;
+              break ;
+            case 'socks5' :
+              $this->server['proxy']['type'] = CURLPROXY_SOCKS5 ;
+              break ;
+            default :
+              $this->server['proxy']['type'] = NULL ;
+          }
+        }
+        if ( ! @array_key_exists ( 'host' , $this->server['proxy'] ) | @is_null($this->server['proxy']['host']) ) {
+          $this->server['proxy']['host'] = NULL ;
+        }
+        if ( ! @array_key_exists ( 'port' , $this->server['proxy'] ) | @is_null($this->server['proxy']['port']) ) {
+          $this->server['proxy']['port'] = NULL ;
+        }
+        if ( ! @array_key_exists ( 'user' , $this->server['proxy'] ) | @is_null($this->server['proxy']['user']) ) {
+          $this->server['proxy']['user'] = NULL ;
+        }
+        if ( ! @array_key_exists ( 'pass' , $this->server['proxy'] ) | @is_null($this->server['proxy']['pass']) ) {
+          $this->server['proxy']['pass'] = NULL ;
+        }
+      }
       fn_Debug ( 'Default values set' , $this->server , 'rpcpass' ) ;
       fn_Debug ( 'Checking if secure RPC connection is requested' , $this->server['secure'] ) ;
       switch ($this->server['secure']) {
@@ -89,7 +126,7 @@
       $connstring = $connprefix . $this->server['host'] . '/jsonrpc' ;
       fn_Debug ( 'Connection string formulated, releasing prefix memory' , $connstring ) ;
       unset($connprefix) ;
-      $this->ch = curl_init($connstring) ;
+      $this->ch = curl_init() ;
       fn_Debug ( 'initiated curl; analysing errors' , $this->ch ) ;
       fn_Debug ('error code' , curl_errno($this->ch) ) ;
       fn_Debug ('error message' , curl_error($this->ch) ) ;
@@ -128,7 +165,8 @@
           CURLOPT_PORT              => $this->server['port'] ,
           CURLOPT_HTTPAUTH          => CURLAUTH_BASIC ,
           CURLOPT_USERPWD           => $this->server['rpcuser'] . ':' . $this->server['rpcpass'] ,
-          CURLOPT_USERAGENT         => 'Mozilla/5.0 (' . $curlinfo['host'] . ') libcURL/' . $curlinfo['version'] . ' phpAria2rpc'
+          CURLOPT_USERAGENT         => 'Mozilla/5.0 (' . $curlinfo['host'] . ') libcURL/' . $curlinfo['version'] . ' phpAria2rpc' ,
+          CURLOPT_URL               => $connstring
         )
       ) ;
       fn_Debug ( 'Curl options set; analysing errors ' , $result ) ;
@@ -143,12 +181,66 @@
         curl_setopt_array (
           $this->ch ,
           array (
-            CURLOPT_CAINFO => $this->server['cacert']
+            CURLOPT_CAINFO         => $this->server['cacert'] ,
+            // CURLOPT_SSL_VERIFYPEER => FALSE , // WARNING: THIS OPTION IS INSECURE AND FOR TESTING ONLY
+            // CURLOPT_SSL_VERIFYHOST => FALSE    // WARNING: THIS OPTION IS INSECURE AND FOR TESTING ONLY
           )
         ) ;
         fn_Debug ( 'CA cert for curl set; analysing errors ' , $result ) ;
         fn_Debug ( 'error code' , curl_errno($this->ch) ) ;
         fn_Debug ( 'error message' , curl_error($this->ch) ) ;
+      }
+      fn_Debug ( 'Checking curl proxy options' , @$this->server['proxy'] , 'pass' ) ;
+      if ( ! is_null($this->server['proxy']) ){
+        if ( !is_null($this->server['proxy']['host']) && !is_null($this->server['proxy']['port']) ) {
+          fn_Debug ( 'Setting curl proxy options' ) ;
+          $result = NULL ;
+          fn_Debug ( 'initialised result buffer' , $result ) ;
+          $result = curl_setopt_array (
+            $this->ch ,
+            array (
+              CURLOPT_PROXYTYPE       => $this->server['proxy']['type'] ,
+              CURLOPT_PROXY           => $this->server['proxy']['host'] ,
+              CURLOPT_PROXYPORT       => $this->server['proxy']['port'] ,
+              CURLOPT_HTTPPROXYTUNNEL => FALSE ,
+              CURLOPT_PROXYAUTH       => CURLAUTH_BASIC ,
+              CURLOPT_PROXYUSERPWD    => $this->server['proxy']['user'] . ':' . $this->server['proxy']['pass']
+            )
+          ) ;
+          fn_Debug ( 'Curl proxy options set; analysing errors ' , $result ) ;
+          fn_Debug ('error code' , curl_errno($this->ch) ) ;
+          fn_Debug ('error message' , curl_error($this->ch) ) ;
+          fn_Debug ( 'Checking curl proxy user' , @$this->server['proxy']['user'] ) ;
+          if ( !is_null($this->server['proxy']['user']) ) {
+            fn_Debug ( 'Non-null user; setting curl proxy login string' ) ;
+            $proxylogin = NULL ; //first ensure you start with an empty string
+            $proxylogin = $this->server['proxy']['user'] ;
+            fn_Debug ( 'curl proxy login string set' , $proxylogin ) ;
+            fn_Debug ( 'checking curl proxy password' , $this->server['proxy']['pass'] , '' ) ;
+            if ( !is_null($this->server['proxy']['pass']) ) {
+              fn_Debug ( 'Non-null password; setting curl proxy login string' ) ;
+              $proxylogin .= ':' . $this->server['proxy']['pass'] ;
+              fn_Debug ( 'curl proxy login string set' , $proxylogin  , '' ) ;
+            } else {
+              fn_Debug ( 'Null password; ignoring password in curl proxy login setting' ) ;
+            }
+            fn_Debug ( 'Non-null user; setting curl proxy user' ) ;
+            $result = NULL ;
+            fn_Debug ( 'initialised result buffer' , $result ) ;
+            $result = curl_setopt ( $this->ch , CURLOPT_PROXYUSERPWD , $proxylogin ) ;
+            fn_Debug ( 'Curl proxy login set; analysing errors ' , $result ) ;
+            fn_Debug ('error code' , curl_errno($this->ch) ) ;
+            fn_Debug ('error message' , curl_error($this->ch) ) ;
+            fn_Debug ( 'Proxy login string used, releasing variable  memory' , $proxylogin ) ;
+            unset($proxylogin) ;
+          } else {
+            fn_Debug ( 'Null user; ignoring curl proxy login setting' ) ;
+          }
+        } else {
+          fn_Debug ( 'Null host/port in proxy settings array' , @$this->server['proxy'] , 'pass' ) ;
+        }
+      } else {
+        fn_Debug ( 'Null proxy settings array' , @$this->server['proxy'] , 'pass' ) ;
       }
     }
     
