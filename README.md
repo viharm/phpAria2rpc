@@ -126,7 +126,7 @@ $server = array (
     'host' => 'localhost' ,
     'port' => 9050 ,
     'user' => 'proxyuser' ,
-    'pass' => 'proxypassword
+    'pass' => 'proxypassword'
   )
 ) ;
 ```
