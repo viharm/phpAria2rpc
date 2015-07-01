@@ -57,7 +57,7 @@
     ) {
       if (!function_exists('fn_Debug')) { function fn_Debug(){} }  // trap calls to debug if debug library is not loaded.
       
-      fn_Debug ( 'Server information' , $server , array ( 'rpcsecret' , 'rpcpass' ) ) ;
+      fn_Debug ( 'Server information' , $server , array ( 'rpcsecret' , 'rpcpass' , 'pass' ) ) ;
       $this->server = $server ;
       fn_Debug ( 'transferred host string to private class variable, now applying default values' , $this->server , array ( 'rpcsecret' , 'rpcpass' ) ) ;
       if ( ! @array_key_exists ( 'host' , $this->server ) | @is_null($this->server['host']) ) {
@@ -111,7 +111,7 @@
           $this->server['proxy']['pass'] = NULL ;
         }
       }
-      fn_Debug ( 'Default values set' , $this->server , 'rpcpass' ) ;
+      fn_Debug ( 'Default values set' , $this->server , array ( 'rpcsecret' , 'rpcpass' , 'pass' ) ) ;
       fn_Debug ( 'Checking if secure RPC connection is requested' , $this->server['secure'] ) ;
       switch ($this->server['secure']) {
         case TRUE :
@@ -235,7 +235,7 @@
             fn_Debug ( 'Curl proxy login set; analysing errors ' , $result ) ;
             fn_Debug ('error code' , curl_errno($this->ch) ) ;
             fn_Debug ('error message' , curl_error($this->ch) ) ;
-            fn_Debug ( 'Proxy login string used, releasing variable  memory' , $proxylogin ) ;
+            fn_Debug ( 'Proxy login string used, releasing variable  memory' , $proxylogin , '' ) ;
             unset($proxylogin) ;
           } else {
             fn_Debug ( 'Null user; ignoring curl proxy login setting' ) ;
