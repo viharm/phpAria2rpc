@@ -458,6 +458,8 @@ Debugging can be enabled by setting boolean `$GLOBALS['bl_DebugSwitch']` to `TRU
 $GLOBALS['bl_DebugSwitch'] = TRUE ;
 ```
 
+Note, that this requires *[phpKhelper](https://gitlab.com/viharm/phpKhelper)* >= v01.02.01
+
 For issues, queries, suggestions and comments please create an [issue/ticket][ln_Issues].
 
 

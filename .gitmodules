@@ -1,0 +1,3 @@
+[submodule "Lib/phpKhelper"]
+	path = Lib/phpKhelper
+	url = https://gitlab.com/viharm/phpKhelper.git

@@ -24,7 +24,7 @@
   @include_once ( realpath (
     dirname(__FILE__) .
     DIRECTORY_SEPARATOR .
-    'fl_Debug.lib.inc.php'
+    'phpKhelper.lib.inc.php'
   ) ) ;
   
   
@@ -46,9 +46,9 @@
     ) {
       if (!function_exists('fn_Debug')) { function fn_Debug(){} }  // trap calls to debug if debug library is not loaded.
       
-      fn_Debug ( 'Server information' , $server , 'rpcpass' ) ;
+      fn_Debug ( 'Server information' , $server , array ( 'rpcsecret' , 'rpcpass' ) ) ;
       $this->server = $server ;
-      fn_Debug ( 'transferred host string to private class variable, now applying default values' , $this->server , 'rpcpass' ) ;
+      fn_Debug ( 'transferred host string to private class variable, now applying default values' , $this->server , array ( 'rpcsecret' , 'rpcpass' ) ) ;
       if ( ! @array_key_exists ( 'host' , $this->server ) | @is_null($this->server['host']) ) {
         $this->server['host'] = '127.0.0.1' ;
       }
@@ -70,7 +70,7 @@
       if ( ! @array_key_exists ( 'rpcpass' , $this->server ) | @is_null($this->server['rpcpass']) ) {
         $this->server['rpcpass'] = NULL ;
       }
-      fn_Debug ( 'Default values set' , $this->server , 'rpcpass' ) ;
+      fn_Debug ( 'Default values set' , $this->server , array ( 'rpcsecret' , 'rpcpass' ) ) ;
       fn_Debug ( 'Checking if secure RPC connection is requested' , $this->server['secure'] ) ;
       switch ($this->server['secure']) {
         case TRUE :
@@ -200,7 +200,7 @@
         'method'  => 'aria2.' . $name ,
         'params'  => $arg
       ) ;
-      fn_Debug ( 'array formulated' , $data ) ;
+      fn_Debug ( 'array formulated' , $data , '0' ) ;
       $data = json_encode($data) ;
       fn_Debug ( 'array encoded to json, sending request' , $data ) ;
       $result = NULL ;
