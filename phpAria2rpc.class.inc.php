@@ -24,6 +24,10 @@
   @include_once ( realpath (
     dirname(__FILE__) .
     DIRECTORY_SEPARATOR .
+    'Lib' .
+    DIRECTORY_SEPARATOR .
+    'phpKhelper' .
+    DIRECTORY_SEPARATOR .
     'phpKhelper.lib.inc.php'
   ) ) ;
   
