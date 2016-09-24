@@ -92,6 +92,13 @@ $aria2 = new phpAria2rpc() ;
 
 *phpAria2rpc* uses safe defaults for *Aria2* running on the same host as the script is running on. See advanced usage for custom configuration
 
+Once the object is created, the library tests the connection by querying the version of Aria2. The status (success or failure) of this query is saved in a boolean:
+```
+$aria2->bl_ConnStatus
+```
+
+This boolean can be used in the logic of the calling function/script to formulate escape routes in case of connection failure.
+
 
 #### Call Aria2 methods
 
