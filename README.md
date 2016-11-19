@@ -1,9 +1,12 @@
 # phpAria2rpc
 
-[![Version][mg_BadgeVersion]][ln_ReleaseLatest]
-[![Issues][mg_BadgeIssues]][ln_Issues]
-[![Language][mg_BadgeCodeLang]][ln_CodeLang]
-[![License][mg_BadgeLicense]][ln_License]
+|           |                                                 |
+|:----------|:------------------------------------------------|
+| Version   | 02.03.00                                        |
+| Download  | https://github.com/viharm/phpAria2rpc/releases  |
+| Issues    | https://github.com/viharm/phpAria2rpc/issues    |
+| License   | Modified BSD (3-clause)                         |
+| Language  | PHP                                             |
 
 Library to communicate with aria2 using json-RPC.
 
@@ -25,7 +28,7 @@ Based on *[shiny](https://github.com/shiny)*'s *[php-aria2](https://github.com/s
 
 #### Archive
 
-Get the release archives from [downloads][ln_ReleaseLatest]
+Get the release archives from [downloads](https://github.com/viharm/phpAria2rpc/releases)
 
 
 #### Clone
@@ -91,6 +94,13 @@ $aria2 = new phpAria2rpc() ;
 ```
 
 *phpAria2rpc* uses safe defaults for *Aria2* running on the same host as the script is running on. See advanced usage for custom configuration
+
+Once the object is created, the library tests the connection by querying the version of Aria2. The status (success or failure) of this query is saved in a boolean:
+```
+$aria2->bl_ConnStatus
+```
+
+This boolean can be used in the logic of the calling function/script to formulate escape routes in case of connection failure.
 
 
 #### Call Aria2 methods
@@ -516,22 +526,26 @@ $GLOBALS['bl_DebugSwitch'] = TRUE ;
 
 Note, that this requires *[phpKhelper](https://gitlab.com/viharm/phpKhelper)* >= v01.02.01
 
-For issues, queries, suggestions and comments please create an [issue/ticket][ln_Issues].
+For issues, queries, suggestions and comments please create an (issue/ticket][https://github.com/viharm/phpAria2rpc/issues).
 
 
 ## Contribute
 
-Please feel free to clone/fork and contribute via pull requests. Donations also welcome, simply create an [issue/ticket][ln_Issues].
+Please feel free to clone/fork and contribute via pull requests. Donations also welcome, simply create an [issue/ticket](https://github.com/viharm/phpAria2rpc/issues).
 
 Please make contact for more information.
 
 
-## Development environment ##
-Developed on..
+## Environment ##
+
+Tested on:
 
 * *Debian Wheezy*
+* *Debian Jessie*
 * *Apache* 2.2
+* *Apache* 2.4
 * *PHP* 5.4
+* *PHP* 5.5
 * *Aria2* 1.15.1 and 1.18.8
 
 
@@ -541,7 +555,7 @@ Licensed under the modified BSD (3-clause) license.
 
 A copy of the license is available...
 
-* in the enclosed [`LICENSE`][ln_License] file.
+* in the enclosed [`LICENSE`](https://github.com/viharm/phpAria2rpc/blob/master/LICENCE) file.
 * at http://opensource.org/licenses/BSD-3-Clause
 
 
@@ -589,13 +603,3 @@ Copyright (C) jEdit authors.
 
 Hosted by *GitHub* code repository (github.com).
 
-
-
-[mg_BadgeLicense]: https://img.shields.io/github/license/viharm/phpAria2rpc.svg?style=flat-square
-[mg_BadgeVersion]: https://img.shields.io/github/release/viharm/phpAria2rpc.svg?style=flat-square
-[mg_BadgeIssues]: https://img.shields.io/github/issues/viharm/phpAria2rpc.svg?style=flat-square
-[mg_BadgeCodeLang]: https://img.shields.io/badge/language-php-yellowgreen.svg?style=flat-square
-[ln_ReleaseLatest]: https://github.com/viharm/phpAria2rpc/releases/latest
-[ln_License]: LICENCE?at=master
-[ln_Issues]: https://github.com/viharm/phpAria2rpc/issues
-[ln_CodeLang]: https://www.python.org/

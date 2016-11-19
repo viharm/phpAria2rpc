@@ -246,6 +246,19 @@
       } else {
         fn_Debug ( 'Null proxy settings array' , @$this->server['proxy'] , 'pass' ) ;
       }
+      
+      // Test settings
+      fn_Debug ( 'Testing Aria2 version' , $this->getVersion() ) ;
+      fn_Debug ( 'Checking for cURL errors' ) ;
+      if ( curl_errno($this->ch) !== 0 ) {
+        fn_Debug ( 'cURL error found' , curl_errno($this->ch) ) ;
+        $this->bl_ConnStatus = FALSE ;
+        fn_Debug ( 'Status set' , $this->bl_ConnStatus ) ;
+      } else {
+        fn_Debug ( 'No cURL errors' , curl_errno($this->ch) ) ;
+        $this->bl_ConnStatus = TRUE ;
+        fn_Debug ( 'Status set' , $this->bl_ConnStatus ) ;
+      }
     }
     
     function __destruct() {
