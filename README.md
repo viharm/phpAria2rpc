@@ -2,7 +2,7 @@
 
 |           |                                                 |
 |:----------|:------------------------------------------------|
-| Version   | 2.4.0                                           |
+| Version   | 2.4.0+                                          |
 | Changes   | https://github.com/viharm/phpAria2rpc/pull/7    |
 | Download  | https://github.com/viharm/phpAria2rpc/releases  |
 | Issues    | https://github.com/viharm/phpAria2rpc/issues    |
