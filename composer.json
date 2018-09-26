@@ -1,0 +1,32 @@
+{
+	"name": "viharm/php-aria2-rpc",
+	"type": "library",
+	"description": "A PHP library to interact with Aria2 download manager via the Aria2 RPC interface",
+	"keywords": ["aria2","php","rpc"],
+	"homepage": "https://github.com/viharm/phpAria2rpc",
+	"license": "BSD-3-Clause",
+	"authors": [
+    {
+      "name": "Viharm",
+      "email": "viharm@malviya.net",
+      "homepage": "http://viharm.malviya.net",
+      "role": "Developer"
+    }
+	],
+  "support": {
+    "issues": "https://github.com/viharm/phpAria2rpc/issues"
+  },	
+	"require": {
+    "php": ">=5.4.0",
+    "mnsami/composer-custom-directory-installer": "1.1.*",
+    "viharm/php-khelper": "^1.4.1"
+	},
+ "config": {
+    "vendor-dir": "Lib"
+  },
+  "extra": {
+    "installer-paths": {
+      "./Lib/phpKhelper": ["viharm/php-khelper"]
+    }
+  }
+}
