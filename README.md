@@ -2,7 +2,8 @@
 
 |           |                                                 |
 |:----------|:------------------------------------------------|
-| Version   | 02.03.00                                        |
+| Version   | 2.4.0                                           |
+| Changes   | https://github.com/viharm/phpAria2rpc/pull/7    |
 | Download  | https://github.com/viharm/phpAria2rpc/releases  |
 | Issues    | https://github.com/viharm/phpAria2rpc/issues    |
 | License   | Modified BSD (3-clause)                         |
@@ -29,6 +30,36 @@ Based on *[shiny](https://github.com/shiny)*'s *[php-aria2](https://github.com/s
 #### Archive
 
 Get the release archives from [downloads](https://github.com/viharm/phpAria2rpc/releases)
+
+### Composer
+
+From v2.4.0 onwards, *phpAria2rpc* is enabled for *Composer*, and is available on *Packagist* as `viharm`/`php-aria2-rpc`. This library can be installed standalone or included in any project with *Composer* usage.
+
+
+#### Standalone
+
+A standalone copy of this project can be installed with *Composer*
+
+```
+php compser.phar create-project viharm/php-aria2-rpc phpAria2rpc
+```
+
+The above command will install *phpAria2rpc* in a sub-directory `phpAria2rpc` of the current working directory.
+
+
+#### Dependency
+
+To make *Composer* automatically install *phpAria2rpc* as a dependency include the following in your `composer.json`
+
+```json
+{
+	"require": {
+    "viharm/php-aria2-rpc": "^2.4.0"
+	}
+}
+```
+
+This will install *phpAria2rpc* in the standard `vendor` sub-directory of a typical *Composer*-enabled project.
 
 
 #### Clone
@@ -592,11 +623,30 @@ Copyright (c) 2013 Rokas Å leinius (raveren at gmail dot com)
 Copyright (c) Codiad & Kent Safranski (codiad.com)
 
 
+#### CodeGit
+
+*CodeGit* *Git* plugin for *Codiad* (https://github.com/Andr3as/Codiad-CodeGit), used under a MIT-style license.
+
+Copyright (c) Andr3as <andranode@gmail.com>
+
+
+#### VS Code
+
+*Visual Studio Code* code editor, used under the *Microsoft Software License*.
+
+
 #### jEdit
 
 *jEdit* text editor (http://www.jedit.org/), used under the GNU GPL v2.
 
 Copyright (C) jEdit authors.
+
+
+#### Ungit
+
+*Ungit* client for *Git* (https://github.com/FredrikNoren/ungit) used under the MIT license
+
+Copyright (C) Fredrik Norén
 
 
 ### GitHub
